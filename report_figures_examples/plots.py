@@ -59,7 +59,7 @@ for alpha in alphas:
             plt.xlim(0,time)
             plt.xlabel(r"$t$", fontsize = '16')
             plt.ylabel(r"$x_i(t)$", fontsize = '16')
-            #plt.savefig('short_range_pairwise.png', dpi=400) 
+            plt.savefig('DYNAMICS_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=400) 
             plt.show()
             
             expected_time_steps = time # Check if they survived
@@ -85,7 +85,7 @@ for alpha in alphas:
             ax.set_ylabel(r"$x_2$", fontsize = 14)
             ax.set_zlabel(r"$x_3$", fontsize = 14)
             
-            #plt.savefig('simplex3D_longrange.png', dpi=300)
+            plt.savefig('SIMPLEX3D_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=400)
             plt.show()
             
             
@@ -103,7 +103,7 @@ for alpha in alphas:
             plt.ylim(-0.5,0.5)
             plt.ylabel(r'$Y_2$', fontsize = 11.5)
             plt.xlabel(r'$Y_1$', fontsize = 11.5)
-            
+            plt.savefig('SIMPLEX2D_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=400)
             plt.show()
             
             #AREA            
@@ -228,7 +228,7 @@ for alpha in alphas:
             for i, j in edges:
                 plt.plot(points[[i, j], 0], points[[i, j], 1], 'orange')  
                 
-            #plt.savefig('simplex2D.pdf')    
+            plt.savefig('SIMPLEX2D_clean_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=400)  
             plt.show()
             
             EDGES = []
