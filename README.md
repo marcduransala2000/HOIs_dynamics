@@ -5,7 +5,7 @@ Repository for the results of the paper **“On the stability of competitive eco
 ## Structure
 
 - `src/`                         – Main code  
-- `report_figures_examples/`     – Example .txt outputs for α = 0 and α = 0.1 (all-to-all simulation case) **and** example SVG figures  
+- `report_figures_examples/`     – Example .txt outputs for α = 0 and α = 0.1 **and** SVG figures output for Monte Carlo simulations (all-to-all case)
 - `datos_empiricos/`             – Empirical CSV datasets used in ODE runs   
 - `requirements.txt`             – Python dependencies  
 - `README.md`                    – This file  
