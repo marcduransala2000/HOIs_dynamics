@@ -1,7 +1,6 @@
 # HOIs_dynamics
 
-Repository for the results of the paper **“On the stability of competitive ecological communities with pairwise and higher-order interactions”**  
-(arXiv: https://arxiv.org/abs/2501.09172)
+Repository for the results of the paper **“On the stability of competitive ecological communities with pairwise and higher-order interactions”** (arXiv: https://arxiv.org/abs/2501.09172)
 
 ## Structure
 
