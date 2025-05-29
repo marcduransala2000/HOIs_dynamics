@@ -85,7 +85,7 @@ for alpha in alphas:
             ax.set_ylabel(r"$x_2$", fontsize = 14)
             ax.set_zlabel(r"$x_3$", fontsize = 14)
             
-            plt.savefig('SIMPLEX3D_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=400)
+            plt.savefig('SIMPLEX3D_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=600, bbox_inches='tight')
             plt.show()
             
             
@@ -103,7 +103,7 @@ for alpha in alphas:
             plt.ylim(-0.5,0.5)
             plt.ylabel(r'$Y_2$', fontsize = 11.5)
             plt.xlabel(r'$Y_1$', fontsize = 11.5)
-            plt.savefig('SIMPLEX2D_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=400)
+            #plt.savefig('SIMPLEX2D_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=600, bbox_inches='tight')
             plt.show()
             
             #AREA            
@@ -228,7 +228,7 @@ for alpha in alphas:
             for i, j in edges:
                 plt.plot(points[[i, j], 0], points[[i, j], 1], 'orange')  
                 
-            plt.savefig('SIMPLEX2D_clean_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=400)  
+            plt.savefig('SIMPLEX2D_clean_density_alpha_'+str(alpha)+'_net_'+str(net_idx)+'_run_'+str(run)+'_size_'+str(L)+'_radius_'+str(radius)+'_' +network+'.svg', dpi=600, bbox_inches='tight')  
             plt.show()
             
             EDGES = []

@@ -33,7 +33,7 @@ if save_dynamics_equal_physiological_rates == True:
     plt.xlabel(r"$t$", fontsize=25)
     plt.ylabel(r"$x_i(t)$", fontsize=25)
     
-    plt.savefig('RK_dynamics_equal_rates_alpha_' + str(round(alpha,4)) + '.svg')
+    plt.savefig('RK_dynamics_equal_rates_alpha_' + str(round(alpha,4)) + '.svg', dpi=600, bbox_inches='tight')
     plt.show()
     
     
@@ -62,5 +62,5 @@ if save_dynamics_different_physiological_rates == True:
     plt.xlabel(r"$t$", fontsize=25)
     plt.ylabel(r"$x_i(t)$", fontsize=25)
     
-    plt.savefig('RK_dynamics_different_rates_alpha_' + str(round(alpha,4)) + '.svg')
+    plt.savefig('RK_dynamics_different_rates_alpha_' + str(round(alpha,4)) + '.svg', dpi=600, bbox_inches='tight')
     plt.show()
