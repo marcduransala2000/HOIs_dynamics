@@ -260,7 +260,7 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
             'ratios_C': ratios_C,           
             'std_ratios_C': std_C,
             'alpha_c': alpha_c,
-            'p_c_i': p_c_i
+            'p_c_i': p_c_i # 1 if there is coexistence, otherwise 0
         })
         
     return results
