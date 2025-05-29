@@ -7,7 +7,7 @@ import random
 import ast
 
 
-os.chdir(r'C:\Users\mduran\Desktop\MSc\TFM\RK\real_test')
+os.chdir(r'C:\Users\mduran\Desktop\MSc\TFM\RK')
 
 H = [[0.5, 0.34, 0.76], [0.66,0.5,0.25], [0.24,0.75,0.5]] #interaction matrix
 
@@ -49,9 +49,16 @@ def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3):
     t = 0
     
     numerical_extinction = False
+    
+    if save_dynamics_equal_physiological_rates == True:
         
-    f = open('seeds_different_rates_alpha' + str(round(alpha,4)) + '.txt','w')
-    f.write(str(t) + " " + str(x1) + " " + str(x2) + " " + str(x3) + "\n")
+        f = open('RK_dynamics_equal_rates_alpha_' + str(round(alpha,4)) + '.txt','w')
+        f.write(str(t) + " " + str(x1) + " " + str(x2) + " " + str(x3) + "\n")
+        
+    if save_dynamics_different_physiological_rates == True:
+        
+        f = open('RK_dynamics_different_rates_alpha_' + str(round(alpha,4)) + '.txt','w')
+        f.write(str(t) + " " + str(x1) + " " + str(x2) + " " + str(x3) + "\n")
         
     
     for i in range(nsteps):
@@ -77,8 +84,10 @@ def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3):
             #print(x1,x2,x3)
                     
             t += h_int
-                
-        f.write(str(t) + " " + str(x1) + " " + str(x2) + " " + str(x3) + "\n")
+            
+        if save_dynamics_equal_physiological_rates == True or save_dynamics_different_physiological_rates == True:
+            
+            f.write(str(t) + " " + str(x1) + " " + str(x2) + " " + str(x3) + "\n")
             
         data[0, i]= t
         data[1, i] = x1
@@ -255,8 +264,47 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
         })
         
     return results
+'''
+# ------------------------------------------------------------------------------------------------
+
+# RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - EQUAL PHYSIOLOGICAL RATES 
+save_dynamics_equal_physiological_rates = True
+save_dynamics_different_physiological_rates = False
+
+nsteps= 20000
+h_int=0.1
+dt=0.1
+x10 = 0.32
+x20 = 0.21
+x30 = 0.47
+alpha = 0.1
+f1, f2, f3, d1, d2, d3 = 1,1,1,1,1,1
+rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
+'''
+
+# ------------------------------------------------------------------------------------------------
+
+# RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - DIFFERENT PHYSIOLOGICAL RATES
+save_dynamics_equal_physiological_rates = False
+save_dynamics_different_physiological_rates = True
+
+nsteps= 20000
+h_int=0.1
+dt=0.1
+x10 = 0.32
+x20 = 0.21
+x30 = 0.47
+alpha = 0.1
+f1, f2, f3, d1, d2, d3 = 0.96,1.04,0.99,0.97,0.94,1.09
+rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
+
+'''
+# ------------------------------------------------------------------------------------------------
 
 # RUN THE MAIN CODE FOR GAUSSIAN DATA
+save_dynamics_different_physiological_rates = False
+save_dynamics_equal_physiological_rates = False
+
 nsteps = 5000
 h_int = 1
 dt = 1
@@ -280,6 +328,9 @@ results_df.to_csv('simulation_results_gaussian_sampling.csv', index=False)
 
 # RUN THE MAIN CODE FOR REAL DATA
 os.chdir(r'C:/Users/mduran/Desktop/MSc/TFM\RK/real_test')
+
+save_dynamics_different_physiological_rates = False
+save_dynamics_equal_physiological_rates = False
 
 nsteps = 5000
 h_int = 1
@@ -309,4 +360,4 @@ for plant_type in plant_types:
     f = open(plant_type+'results.txt','w')
     f.write(str(avg_alpha_c) + ' ' + str(alpha_c_std) + ' ' + str(p_c))
     f.close()
-    
+'''    
