@@ -202,7 +202,7 @@ def run_simulation_with_gaussian_sampling(nsteps, h_int, dt, ALPHAS, num_trials,
                 'ratios_C': ratios_C,
                 'std_ratios_C': std_C,
                 'alpha_c': alpha_c,
-                'p_c_i': p_c_i
+                'p_c_i': p_c_i # 1 if there is coexistence, otherwise 0
             })
             num_trials_done += 1
             
@@ -264,100 +264,118 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
         })
         
     return results
-'''
+
+# ------------------------------------------------------------------------------------------------
+
+# OPTIONS
+# 1- RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - EQUAL PHYSIOLOGICAL RATES 
+# 2- RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - DIFFERENT PHYSIOLOGICAL RATES
+# 3- RUN THE MAIN CODE FOR GAUSSIAN DATA
+# 4- RUN THE MAIN CODE FOR REAL DATA
+
+option = 1
+
 # ------------------------------------------------------------------------------------------------
 
 # RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - EQUAL PHYSIOLOGICAL RATES 
-save_dynamics_equal_physiological_rates = True
-save_dynamics_different_physiological_rates = False
 
-nsteps= 20000
-h_int=0.1
-dt=0.1
-x10 = 0.32
-x20 = 0.21
-x30 = 0.47
-alpha = 0.1
-f1, f2, f3, d1, d2, d3 = 1,1,1,1,1,1
-rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
-'''
+if option == 1:
+    save_dynamics_equal_physiological_rates = True
+    save_dynamics_different_physiological_rates = False
+    
+    nsteps= 20000
+    h_int=0.1
+    dt=0.1
+    x10 = 0.32
+    x20 = 0.21
+    x30 = 0.47
+    alpha = 0.1
+    f1, f2, f3, d1, d2, d3 = 1,1,1,1,1,1
+    rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
+
 
 # ------------------------------------------------------------------------------------------------
 
 # RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - DIFFERENT PHYSIOLOGICAL RATES
-save_dynamics_equal_physiological_rates = False
-save_dynamics_different_physiological_rates = True
 
-nsteps= 20000
-h_int=0.1
-dt=0.1
-x10 = 0.32
-x20 = 0.21
-x30 = 0.47
-alpha = 0.1
-f1, f2, f3, d1, d2, d3 = 0.96,1.04,0.99,0.97,0.94,1.09
-rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
+if option == 2:
+    save_dynamics_equal_physiological_rates = False
+    save_dynamics_different_physiological_rates = True
+    
+    nsteps= 20000
+    h_int=0.1
+    dt=0.1
+    x10 = 0.32
+    x20 = 0.21
+    x30 = 0.47
+    alpha = 0.1
+    f1, f2, f3, d1, d2, d3 = 0.96,1.04,0.99,0.97,0.94,1.09
+    rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
 
-'''
+
 # ------------------------------------------------------------------------------------------------
 
 # RUN THE MAIN CODE FOR GAUSSIAN DATA
-save_dynamics_different_physiological_rates = False
-save_dynamics_equal_physiological_rates = False
 
-nsteps = 5000
-h_int = 1
-dt = 1
-ALPHAS = np.linspace(0, 1.0, 81)
-num_trials_per_std = 10000  # Number of trials per std
-std_list = [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 0.75, 1]
-mean_f_d = 1.0  # Mean value for f and d
-
-# Run simulation
-results = run_simulation_with_gaussian_sampling(
-    nsteps, h_int, dt, ALPHAS,
-    num_trials_per_std, std_list, mean_f_d
-)
-
-# Convert results to DataFrame and save to CSV
-results_df = pd.DataFrame(results)
-results_df.to_csv('simulation_results_gaussian_sampling.csv', index=False)
+if option == 3:
+    save_dynamics_different_physiological_rates = False
+    save_dynamics_equal_physiological_rates = False
+    
+    nsteps = 5000
+    h_int = 1
+    dt = 1
+    ALPHAS = np.linspace(0, 1.0, 81)
+    num_trials_per_std = 10000  # Number of trials per std
+    std_list = [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 0.75, 1]
+    mean_f_d = 1.0  # Mean value for f and d
+    
+    # Run simulation
+    results = run_simulation_with_gaussian_sampling(
+        nsteps, h_int, dt, ALPHAS,
+        num_trials_per_std, std_list, mean_f_d
+    )
+    
+    # Convert results to DataFrame and save to CSV
+    results_df = pd.DataFrame(results)
+    results_df.to_csv('simulation_results_gaussian_sampling.csv', index=False)
 
 
 # ------------------------------------------------------------------------------------------------
 
 # RUN THE MAIN CODE FOR REAL DATA
-os.chdir(r'C:/Users/mduran/Desktop/MSc/TFM\RK/real_test')
 
-save_dynamics_different_physiological_rates = False
-save_dynamics_equal_physiological_rates = False
-
-nsteps = 5000
-h_int = 1
-dt = 1
-ALPHAS = np.linspace(0, 1, 81)
-num_trials = 15000
-x10, x20, x30 = 0.32, 0.21, 0.47
-
-plant_types = ['Seagrasses', 'Trees', 'LandHerbsSaltMarsh']
-
-# Ejecutar simulaciones para cada tipo de planta
-for plant_type in plant_types:
-    plant_data = pd.read_csv('dataFD_' + plant_type + '.csv', delimiter=',', skiprows=1, header=None)
-    #print(max(plant_data[3]))
-    results = run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_trials)
+if option == 4:
+    os.chdir(r'C:/Users/mduran/Desktop/MSc/TFM\RK/real_test')
     
-    results_df = pd.DataFrame(results)
+    save_dynamics_different_physiological_rates = False
+    save_dynamics_equal_physiological_rates = False
     
-    results_df.to_csv(plant_type+'_simulation_results.csv', index=False)
-    alpha_c_values = results_df['alpha_c']
-    p_c_i_values = results_df['p_c_i']
+    nsteps = 5000
+    h_int = 1
+    dt = 1
+    ALPHAS = np.linspace(0, 1, 81)
+    num_trials = 15000
+    x10, x20, x30 = 0.32, 0.21, 0.47
     
-    avg_alpha_c = alpha_c_values[alpha_c_values.notna()].mean()
-    alpha_c_std = alpha_c_values[alpha_c_values.notna()].std()
-    p_c = p_c_i_values.sum()/len(p_c_i_values)
-
-    f = open(plant_type+'results.txt','w')
-    f.write(str(avg_alpha_c) + ' ' + str(alpha_c_std) + ' ' + str(p_c))
-    f.close()
-'''    
+    plant_types = ['Seagrasses', 'Trees', 'LandHerbsSaltMarsh']
+    
+    # Ejecutar simulaciones para cada tipo de planta
+    for plant_type in plant_types:
+        plant_data = pd.read_csv('dataFD_' + plant_type + '.csv', delimiter=',', skiprows=1, header=None)
+        #print(max(plant_data[3]))
+        results = run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_trials)
+        
+        results_df = pd.DataFrame(results)
+        
+        results_df.to_csv(plant_type+'_simulation_results.csv', index=False)
+        alpha_c_values = results_df['alpha_c']
+        p_c_i_values = results_df['p_c_i']
+        
+        avg_alpha_c = alpha_c_values[alpha_c_values.notna()].mean()
+        alpha_c_std = alpha_c_values[alpha_c_values.notna()].std()
+        p_c = p_c_i_values.sum()/len(p_c_i_values)
+    
+        f = open(plant_type+'results.txt','w')
+        f.write(str(avg_alpha_c) + ' ' + str(alpha_c_std) + ' ' + str(p_c))
+        f.close()
+      
