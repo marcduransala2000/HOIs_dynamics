@@ -1,7 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-os.chdir(r'C:\Users\mduran\Desktop\MSc\TFM\RK')
 
 
 save_dynamics_equal_physiological_rates = True

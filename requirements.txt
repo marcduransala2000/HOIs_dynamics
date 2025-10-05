@@ -6,4 +6,3 @@ seaborn
 scipy
 sympy
 scikit-learn
-pygraphviz

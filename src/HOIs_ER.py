@@ -1,19 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import random
-import matplotlib.colors
 import networkx as nx
 import itertools
 from itertools import combinations
 from collections import defaultdict
-from math import comb
-import pickle
-import time, os
 
-#Here we create a hypernetwork with normal links and hyperlinks (triangles in particular) and the proportion of each is defined by alpha. Then in the dynamics there is no need of alpha, just pick a random link which can be pairwise or HO
-
-os.chdir(r'C:\Users\mduran\Desktop\MSc\TFM\renewed_model')
-
+#Here we create a hypernetwork with "normal" links and hyperlinks (triangles in particular) and the proportion of each is defined by alpha. Then, in the dynamics there is no need of alpha, just pick a random link which can be "normal" (pairwise) or hyperlink (higher order)
 
 H = np.matrix([[0.5, 0.34, 0.76], [0.66,0.5,0.25], [0.24,0.75,0.5]]) #interaction matrix
 

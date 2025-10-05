@@ -1,13 +1,7 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import os
 import random
-import ast
-
-
-os.chdir(r'C:\Users\mduran\Desktop\MSc\TFM\RK')
 
 H = [[0.5, 0.34, 0.76], [0.66,0.5,0.25], [0.24,0.75,0.5]] #interaction matrix
 
@@ -375,7 +369,7 @@ if option == 4:
         alpha_c_std = alpha_c_values[alpha_c_values.notna()].std()
         p_c = p_c_i_values.sum()/len(p_c_i_values)
     
-        f = open(plant_type+'results.txt','w')
-        f.write(str(avg_alpha_c) + ' ' + str(alpha_c_std) + ' ' + str(p_c))
-        f.close()
+        l = open(plant_type+'results.txt','w')
+        l.write(str(avg_alpha_c) + ' ' + str(alpha_c_std) + ' ' + str(p_c))
+        l.close()
       
