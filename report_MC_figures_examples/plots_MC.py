@@ -1,18 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import collections
-import sys
-import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
-import matplotlib as mpl
-import math
-from scipy.stats import gaussian_kde
 from scipy.spatial import Delaunay
 from sympy import Point, Polygon
-from sklearn.decomposition import PCA
-
-import os
-os.chdir(r'C:\Users\mduran\Desktop\MSc\TFM\renewed_model')
 
 L= 100
 N = 10000

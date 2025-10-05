@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Mar 16 17:48:48 2023
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 import random
 import matplotlib.colors
-from mpl_toolkits import mplot3d
-import os
-os.chdir(r'C:\Users\mduran\Desktop\MSc\TFM\renewed_model')
 
 #Define map colors
 levels = [0, 1, 2, 3]
