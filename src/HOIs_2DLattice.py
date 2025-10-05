@@ -47,7 +47,7 @@ def evolution_mixed(state, L, alpha, radius):
             k = state[(x+select_2x)%L,(y+select_2y)%L]
             
         
-        #2
+        #2 --> all-to-all interaction
         elif radius == L:
         
             i = state[x,y]
@@ -91,7 +91,7 @@ def evolution_mixed(state, L, alpha, radius):
             j = state[(x+select_1x)%L,(y+select_1y)%L]
             #print(j)
         
-        #3
+        #2 --> all-to-all interaction
         elif radius == L:
             
             i = state[x,y]
@@ -174,7 +174,7 @@ L=100
 radius = L
 times = 1000
 times_eq = 100
-alphas = [0.1]
+alphas = [0, 0.1]
 
 num_networks = 1
 num_runs_per_network = 1

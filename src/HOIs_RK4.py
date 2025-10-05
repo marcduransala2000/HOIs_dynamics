@@ -262,8 +262,8 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
 # ------------------------------------------------------------------------------------------------
 
 # OPTIONS
-# 1- RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - EQUAL PHYSIOLOGICAL RATES 
-# 2- RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - DIFFERENT PHYSIOLOGICAL RATES
+# 1- RUN ONLY THE RK4 DYNAMICS for a specific fraction of HOIs (alpha) - EQUAL PHYSIOLOGICAL RATES 
+# 2- RUN ONLY THE RK4 DYNAMICS for a specific fraction of HOIs (alpha) - DIFFERENT PHYSIOLOGICAL RATES
 # 3- RUN THE MAIN CODE FOR GAUSSIAN DATA
 # 4- RUN THE MAIN CODE FOR REAL DATA
 
