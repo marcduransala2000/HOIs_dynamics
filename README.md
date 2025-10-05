@@ -6,7 +6,7 @@ Repository for the results of the paper **“Towards a less spherical cow: speci
 ## Structure
 
 - `src/`                              – Main simulation and analysis code  
-- `datos_empiricos/`                  – Empirical CSV datasets used in ODE-based simulations  
+- `datos_empiricos/`                  – Empirical CSV datasets containing physiological rates for different plant species
 - `report_MC_figures_examples/`       – Example `.txt` outputs and corresponding `.svg` figures for Monte Carlo simulations
 - `report_RK4_figures_examples/`      – Example `.txt` outputs and corresponding `.svg` figures for deterministic simulations using 4th-order Runge-Kutta integration
 - `requirements.txt`                  – Python dependencies  
