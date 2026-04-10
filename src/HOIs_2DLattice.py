@@ -76,8 +76,7 @@ def evolution_mixed(state, L, alpha, radius):
             state[x,y]=k
     else:
         
-        #RANGE INTERACTION
-        
+        #RANGE INTERACTION    
         #1
         if not radius == L:
             

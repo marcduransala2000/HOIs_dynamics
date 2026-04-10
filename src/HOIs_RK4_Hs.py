@@ -2,8 +2,50 @@ import numpy as np
 import pandas as pd
 import os
 import random
+import time
 
-H = [[0.5, 0.34, 0.76], [0.66,0.5,0.25], [0.24,0.75,0.5]] #interaction matrix
+#DOMINANCE MATRIX
+def random_H_grilli(S=3, rng=None):
+    """
+    Random dominance matrix H:
+      H_ii = 0.5
+      for i!=j: H_ij + H_ji = 1
+      with H_ij ~ Uniform(0,1) for i<j
+    """
+    rng = np.random.default_rng() if rng is None else rng
+    H = np.full((S, S), 0.5, dtype=float)
+    for i in range(S):
+        for j in range(i+1, S):
+            z = rng.uniform(0.0, 1.0)
+            H[i, j] = z
+            H[j, i] = 1.0 - z
+    return H
+
+def is_intransitive_3(H, thr=0.5):
+    """
+    For S=3: returns True if H_ij > thr contains a 3-cycle
+    """
+    wins = H > thr
+    c1 = wins[0,1] and wins[1,2] and wins[2,0]
+    c2 = wins[0,2] and wins[2,1] and wins[1,0]
+    return bool(c1 or c2)
+
+def random_intransitive_H_3(rng=None, max_tries=1000):
+    rng = np.random.default_rng() if rng is None else rng
+    for _ in range(max_tries):
+        H = random_H_grilli(S=3, rng=rng)
+        if is_intransitive_3(H):
+            return H
+    
+def random_transitive_H_3(rng=None, max_tries=1000, thr=0.5):
+    rng = np.random.default_rng() if rng is None else rng
+    for _ in range(max_tries):
+        H = random_H_grilli(S=3, rng=rng)
+        if not is_intransitive_3(H, thr=thr):
+            return H
+
+def transitivity_label_3(H, thr=0.5):
+    return "intransitive" if is_intransitive_3(H, thr=thr) else "transitive"
 
 #FUNCTIONS
 def F(x1,x2, f1, f2, f3):
@@ -12,14 +54,14 @@ def D(x1,x2, d1, d2, d3):
     return d1*x1+d2*x2+d3*(1-x1-x2)
 
 #DIFFERENTIAL EQUATIONS - HIGHER-ORDER AND PAIRWISE
-def x_111(x1,x2,alpha, f1, f2, f3, d1, d2, d3):
+def x_111(x1,x2,alpha, f1, f2, f3, d1, d2, d3, H):
     return alpha*(x1/F(x1, x2, f1, f2, f3)**3*( D(x1, x2, d1, d2, d3)*( f1*2*H[0][0]*(H[0][0]+H[0][0])*f1*x1*f1*x1 + f1*2*H[0][0]*(H[0][1]+H[0][1])*f1*x1*f2*x2 + f1*2*H[0][0]*(H[0][2]+H[0][2])*f1*x1*f3*(1-x1-x2) + f1*2*H[0][1]*(H[0][0]+H[1][0])*f2*x2*f1*x1 + f1*2*H[0][1]*(H[0][1]+H[1][1])*f2*x2*f2*x2 + f1*2*H[0][1]*(H[0][2]+H[1][2])*f2*x2*f3*(1-x1-x2) + f1*2*H[0][2]*(H[0][0]+H[2][0])*f3*(1-x1-x2)*f1*x1 + f1*2*H[0][2]*(H[0][1]+H[2][1])*f3*(1-x2-x1)*f2*x2 + f1*2*H[0][2]*(H[0][2]+H[2][2])*f3*(1-x2-x1)*f3*(1-x2-x1)  ) - d1*F(x1,x2,f1, f2, f3)**3  ) ) + (1-alpha)*(x1/F(x1, x2, f1, f2, f3)**2*( D(x1, x2, d1, d2, d3)*( f1*2*H[0][0]*f1*x1 + f1*2*H[0][1]*f2*x2 + f1*2*H[0][2]*f3*(1-x1-x2)) - d1*F(x1, x2, f1, f2, f3)**2 ) )
 
-def x_222(x1,x2,alpha, f1, f2, f3, d1, d2, d3):
+def x_222(x1,x2,alpha, f1, f2, f3, d1, d2, d3, H):
     return alpha*(x2/F(x1, x2, f1, f2, f3)**3*( D(x1, x2, d1, d2, d3)*( f2*2*H[1][0]*(H[1][0]+H[0][0])*f1*x1*f1*x1 + f2*2*H[1][0]*(H[1][1]+H[0][1])*f1*x1*f2*x2 + f2*2*H[1][0]*(H[1][2]+H[0][2])*f1*x1*f3*(1-x1-x2) + f2*2*H[1][1]*(H[1][0]+H[1][0])*f2*x2*f1*x1 + f2*2*H[1][1]*(H[1][1]+H[1][1])*f2*x2*f2*x2 + f2*2*H[1][1]*(H[1][2]+H[1][2])*f2*x2*f3*(1-x1-x2) + f2*2*H[1][2]*(H[1][0]+H[2][0])*f3*(1-x1-x2)*f1*x1 + f2*2*H[1][2]*(H[1][1]+H[2][1])*f3*(1-x2-x1)*f2*x2 + f2*2*H[1][2]*(H[1][2]+H[2][2])*f3*(1-x2-x1)*f3*(1-x2-x1)  ) - d2*F(x1,x2,f1, f2, f3)**3  ) ) + (1-alpha)*(x2/F(x1, x2, f1, f2, f3)**2*( D(x1, x2, d1, d2, d3)*( f2*2*H[1][0]*f1*x1 + f2*2*H[1][1]*f2*x2 + f2*2*H[1][2]*f3*(1-x1-x2)) - d2*F(x1, x2, f1, f2, f3)**2 ) )
 
 #RK4 SOLVER
-def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3):
+def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3, H):
     writting_period = int(dt/h_int)
         
         
@@ -44,6 +86,8 @@ def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3):
     
     numerical_extinction = False
     
+    f = None
+    
     if save_dynamics_equal_physiological_rates == True:
         
         f = open('RK_dynamics_equal_rates_alpha_' + str(round(alpha,4)) + '.txt','w')
@@ -59,17 +103,17 @@ def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3):
             
         for j in range(writting_period):
             
-            k_11 = x_111(x1,x2,alpha,f1, f2, f3, d1, d2, d3) 
-            k_12 = x_222(x1,x2,alpha,f1, f2, f3, d1, d2, d3)
+            k_11 = x_111(x1,x2,alpha,f1, f2, f3, d1, d2, d3, H) 
+            k_12 = x_222(x1,x2,alpha,f1, f2, f3, d1, d2, d3, H)
         
-            k_21 = x_111( (x1 + h_2 * k_11), (x2 + h_2 * k_12),alpha,f1, f2, f3, d1, d2, d3)
-            k_22 = x_222( (x1 + h_2 * k_11), (x2 + h_2 * k_12),alpha,f1, f2, f3, d1, d2, d3)
+            k_21 = x_111( (x1 + h_2 * k_11), (x2 + h_2 * k_12),alpha,f1, f2, f3, d1, d2, d3, H)
+            k_22 = x_222( (x1 + h_2 * k_11), (x2 + h_2 * k_12),alpha,f1, f2, f3, d1, d2, d3, H)
                 
-            k_31 = x_111( (x1 + h_2 * k_21), (x2 + h_2 * k_22),alpha,f1, f2, f3, d1, d2, d3)
-            k_32 = x_222( (x1 + h_2 * k_21), (x2 + h_2 * k_22),alpha,f1, f2, f3, d1, d2, d3)
+            k_31 = x_111( (x1 + h_2 * k_21), (x2 + h_2 * k_22),alpha,f1, f2, f3, d1, d2, d3, H)
+            k_32 = x_222( (x1 + h_2 * k_21), (x2 + h_2 * k_22),alpha,f1, f2, f3, d1, d2, d3, H)
                 
-            k_41 = x_111( (x1 + h_int * k_31), (x2 + h_int * k_32),alpha,f1, f2, f3, d1, d2, d3)
-            k_42 = x_222( (x1 + h_int * k_31), (x2 + h_int * k_32),alpha,f1, f2, f3, d1, d2, d3)
+            k_41 = x_111( (x1 + h_int * k_31), (x2 + h_int * k_32),alpha,f1, f2, f3, d1, d2, d3, H)
+            k_42 = x_222( (x1 + h_int * k_31), (x2 + h_int * k_32),alpha,f1, f2, f3, d1, d2, d3, H)
     
             x1 += h_6 * (k_11 + 2 * k_21 + 2 * k_31 + k_41)
             x2 += h_6 * (k_12 + 2 * k_22 + 2 * k_32 + k_42)
@@ -79,8 +123,7 @@ def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3):
                     
             t += h_int
             
-        if save_dynamics_equal_physiological_rates == True or save_dynamics_different_physiological_rates == True:
-            
+        if (save_dynamics_equal_physiological_rates or save_dynamics_different_physiological_rates) and (f is not None):
             f.write(str(t) + " " + str(x1) + " " + str(x2) + " " + str(x3) + "\n")
             
         data[0, i]= t
@@ -94,17 +137,18 @@ def rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3):
             break
 
             
-    f.close()
-        
+    if f is not None:
+        f.close()
+  
     return data, numerical_extinction
 
 
-def rk4_alpha(nsteps, h_int, dt, x10, x20, x30, ALPHAS, f1, f2, f3, d1, d2, d3):
+def rk4_alpha(nsteps, h_int, dt, x10, x20, x30, ALPHAS, f1, f2, f3, d1, d2, d3, H):
     AC = np.nan 
-    for alpha in ALPHAS:
+    for alpha in ALPHAS[1:]:
         #print(alpha)
         
-        data, numerical_extinction = rk4(nsteps, h_int, dt, x10, x20, x30, alpha, f1, f2, f3, d1, d2, d3)
+        data, numerical_extinction = rk4(nsteps, h_int, dt, x10, x20, x30, alpha, f1, f2, f3, d1, d2, d3, H)
         
         
         if numerical_extinction == True:
@@ -138,7 +182,7 @@ def f(std,mean):
 def d(std,mean):
     return np.random.normal(mean,std)
 
-def run_simulation_with_gaussian_sampling(nsteps, h_int, dt, ALPHAS, num_trials, std_list, mean_f_d=1.0):
+def run_simulation_with_gaussian_sampling(nsteps, h_int, dt, ALPHAS, num_trials, std_list, mean_f_d, x10, x20, x30, H):
     results = []
     for std in std_list:
         
@@ -172,10 +216,8 @@ def run_simulation_with_gaussian_sampling(nsteps, h_int, dt, ALPHAS, num_trials,
             mean_rate = (f1_norm + f2_norm + f3_norm + d1_norm + d2_norm + d3_norm) / 6
             adjusted_nsteps = int(nsteps / mean_rate)
 
-            x10, x20, x30 = 0.32, 0.21, 0.47
-
             alpha_c = rk4_alpha(adjusted_nsteps, h_int, dt, x10, x20, x30, ALPHAS,
-                                f1_norm, f2_norm, f3_norm, d1_norm, d2_norm, d3_norm)
+                                f1_norm, f2_norm, f3_norm, d1_norm, d2_norm, d3_norm, H)
 
             p_c_i = 1 if not np.isnan(alpha_c) else 0
 
@@ -202,7 +244,7 @@ def run_simulation_with_gaussian_sampling(nsteps, h_int, dt, ALPHAS, num_trials,
             
     return results
 
-def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_trials):
+def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_trials, x10, x20, x30, H):
     results = []
     used_combinations = set()
     while len(results) < num_trials:
@@ -233,7 +275,7 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
         adjusted_nsteps = int(nsteps / mean_rate)
         #print('adjusted nsteps', adjusted_nsteps)
         
-        alpha_c = rk4_alpha(adjusted_nsteps, h_int, dt, x10, x20, x30, ALPHAS, f1, f2, f3, d1, d2, d3)
+        alpha_c = rk4_alpha(adjusted_nsteps, h_int, dt, x10, x20, x30, ALPHAS, f1, f2, f3, d1, d2, d3, H)
         #print(alpha_c)
         p_c_i = 1 if not np.isnan(alpha_c) else 0
         
@@ -267,17 +309,21 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
 # 3- RUN THE MAIN CODE FOR GAUSSIAN DATA
 # 4- RUN THE MAIN CODE FOR REAL DATA
 
-option = 1
+option = 4
+
+os.chdir(r'C:\Users\mduran\Desktop\PAPERS\HOIs competitive communities\HOIs_dynamics')
 
 # ------------------------------------------------------------------------------------------------
 
-# RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - EQUAL PHYSIOLOGICAL RATES 
+# RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) and H - EQUAL PHYSIOLOGICAL RATES 
 
 if option == 1:
     save_dynamics_equal_physiological_rates = True
     save_dynamics_different_physiological_rates = False
     
-    nsteps= 20000
+    H = [[0.5, 0.34, 0.76], [0.66,0.5,0.25], [0.24,0.75,0.5]] #interaction matrix
+    
+    nsteps= 5000
     h_int=0.1
     dt=0.1
     x10 = 0.32
@@ -285,18 +331,20 @@ if option == 1:
     x30 = 0.47
     alpha = 0.1
     f1, f2, f3, d1, d2, d3 = 1,1,1,1,1,1
-    rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
+    rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3, H)
 
 
 # ------------------------------------------------------------------------------------------------
 
-# RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) - DIFFERENT PHYSIOLOGICAL RATES
+# RUN ONLY THE RK4 DYNAMICS for a specific HOIs fraction of interactions (alpha) and H - DIFFERENT PHYSIOLOGICAL RATES
 
 if option == 2:
     save_dynamics_equal_physiological_rates = False
     save_dynamics_different_physiological_rates = True
     
-    nsteps= 20000
+    H = [[0.5, 0.34, 0.76], [0.66,0.5,0.25], [0.24,0.75,0.5]] #interaction matrix
+    
+    nsteps= 5000
     h_int=0.1
     dt=0.1
     x10 = 0.32
@@ -304,8 +352,7 @@ if option == 2:
     x30 = 0.47
     alpha = 0.1
     f1, f2, f3, d1, d2, d3 = 0.96,1.04,0.99,0.97,0.94,1.09
-    rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3)
-
+    rk4(nsteps, h_int, dt, x10, x20, x30,alpha,f1, f2, f3, d1, d2, d3, H)
 
 # ------------------------------------------------------------------------------------------------
 
@@ -315,61 +362,153 @@ if option == 3:
     save_dynamics_different_physiological_rates = False
     save_dynamics_equal_physiological_rates = False
     
-    nsteps = 5000
+    nsteps = 400
     h_int = 1
     dt = 1
     ALPHAS = np.linspace(0, 1.0, 81)
-    num_trials_per_std = 10000  # Number of trials per std
-    std_list = [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 0.75, 1]
+    num_trials_per_std = 1000  # Number of trials per std
+    x10, x20, x30 = 0.32, 0.21, 0.47
+    std_list = [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.0075, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1]
     mean_f_d = 1.0  # Mean value for f and d
     
-    # Run simulation
-    results = run_simulation_with_gaussian_sampling(
-        nsteps, h_int, dt, ALPHAS,
-        num_trials_per_std, std_list, mean_f_d
-    )
-    
-    # Convert results to DataFrame and save to CSV
-    results_df = pd.DataFrame(results)
-    results_df.to_csv('simulation_results_gaussian_sampling.csv', index=False)
+    base_seed = 123
 
+    H_START = 0
+    H_END = 30
+    
+    for h_id in range(H_START, H_END):
+
+        rng_h = np.random.default_rng(base_seed + h_id)
+        
+        # H = random_H_grilli(S=3, rng=rng)
+        # H = random_transitive_H_3(rng=rng_h, max_tries=10000) # transitivity
+        H = random_intransitive_H_3(rng=rng_h, max_tries=10000) # intransitivity
+        H_np = np.array(H)
+        label = transitivity_label_3(H_np)
+        
+        meta = {
+            "H_id": h_id,
+            "seed_H": base_seed + h_id,
+            "intransitive": (label == "intransitive"),
+            "H01": H_np[0,1],
+            "H02": H_np[0,2],
+            "H12": H_np[1,2],
+        }
+            
+        outfile = f"gaussian_multiH_all_H{h_id}.csv"
+        if os.path.exists(outfile):
+            print(f"SKIP - {outfile} exists")
+            continue
+    
+        # Run simulation
+        results = run_simulation_with_gaussian_sampling(
+            nsteps, h_int, dt, ALPHAS,
+            num_trials_per_std, std_list, mean_f_d, x10, x20, x30, H
+        )
+    
+        df = pd.DataFrame([{**r, **meta} for r in results])
+        df.to_csv(outfile, index=False)
 
 # ------------------------------------------------------------------------------------------------
 
 # RUN THE MAIN CODE FOR REAL DATA
 
 if option == 4:
-    os.chdir(r'C:/Users/mduran/Desktop/MSc/TFM\RK/real_test')
+    os.chdir(r'C:\Users\mduran\Desktop\PAPERS\HOIs competitive communities\HOIs_dynamics\empirical_data')
     
     save_dynamics_different_physiological_rates = False
     save_dynamics_equal_physiological_rates = False
     
-    nsteps = 5000
+    nsteps = 400
     h_int = 1
     dt = 1
     ALPHAS = np.linspace(0, 1, 81)
-    num_trials = 15000
+    num_trials = 10000
     x10, x20, x30 = 0.32, 0.21, 0.47
     
     plant_types = ['Seagrasses', 'Trees', 'LandHerbsSaltMarsh']
     
-    # Ejecutar simulaciones para cada tipo de planta
-    for plant_type in plant_types:
-        plant_data = pd.read_csv('dataFD_' + plant_type + '.csv', delimiter=',', skiprows=1, header=None)
-        #print(max(plant_data[3]))
-        results = run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_trials)
-        
-        results_df = pd.DataFrame(results)
-        
-        results_df.to_csv(plant_type+'_simulation_results.csv', index=False)
-        alpha_c_values = results_df['alpha_c']
-        p_c_i_values = results_df['p_c_i']
-        
-        avg_alpha_c = alpha_c_values[alpha_c_values.notna()].mean()
-        alpha_c_std = alpha_c_values[alpha_c_values.notna()].std()
-        p_c = p_c_i_values.sum()/len(p_c_i_values)
+    base_seed = 123
+
+    H_START = 0
+    H_END = 30
     
-        l = open(plant_type+'results.txt','w')
-        l.write(str(avg_alpha_c) + ' ' + str(alpha_c_std) + ' ' + str(p_c))
-        l.close()
-      
+    for h_id in range(H_START, H_END):
+        
+        if all(os.path.exists(f"{pt}_realdata_multiH_all_H{h_id}.csv") for pt in plant_types):
+            print(f"SKIP - all plant files exist for H{h_id}")
+            continue
+
+        
+        rng_h = np.random.default_rng(base_seed + h_id)
+        
+        # H = random_H_grilli(S=3, rng=rng_h)
+        # H = random_transitive_H_3(rng=rng_h, max_tries=10000) # transitivity
+        H = random_intransitive_H_3(rng=rng_h, max_tries=10000) # intransitivity
+        H_np = np.array(H)
+        label = transitivity_label_3(H_np)
+
+        meta = {
+            "H_id": h_id,
+            "seed_H": base_seed + h_id,
+            "intransitive": (label == "intransitive"),
+            "H01": H_np[0,1],
+            "H02": H_np[0,2],
+            "H12": H_np[1,2],
+        }
+    
+        # Ejecutar simulaciones para cada tipo de planta
+        for plant_type in plant_types:
+            
+            outfile = f"{plant_type}_realdata_multiH_all_H{h_id}.csv"
+            if os.path.exists(outfile):
+                print(f"SKIP - {outfile} exists")
+                continue
+            
+            plant_data = pd.read_csv('dataFD_' + plant_type + '.csv', delimiter=',', skiprows=1, header=None)
+            #print(max(plant_data[3]))
+            
+            # Run simulation
+            results = run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_trials, x10, x20, x30, H)
+    
+            df = pd.DataFrame([{**r, "plant_type": plant_type, **meta} for r in results])
+            df.to_csv(outfile, index=False)
+    
+#------------------------------ 
+    
+# SAVE INFORMATION OF SAMPLE DOMINANCE MATRIX H
+
+if option == 5:
+    
+    base_seed = 123
+
+    H_START = 0
+    H_END = 30
+    
+    meta_file = "multiH_Hmeta.csv"
+    
+    for h_id in range(H_START, H_END):
+
+        rng_h = np.random.default_rng(base_seed + h_id)
+        
+        # H = random_H_grilli(S=3, rng=rng_h)
+        # H = random_transitive_H_3(rng=rng_h, max_tries=10000) # transitivity
+        H = random_intransitive_H_3(rng=rng_h, max_tries=10000) # intransitivity
+        H_np = np.array(H)
+        label = transitivity_label_3(H_np)
+        
+        meta = {
+            "H_id": h_id,
+            "seed_H": base_seed + h_id,
+            "intransitive": (label == "intransitive"),
+            "H01": H_np[0,1],
+            "H02": H_np[0,2],
+            "H12": H_np[1,2],
+        }
+
+        if os.path.exists(meta_file):
+            existing = pd.read_csv(meta_file, usecols=["H_id"])
+            if h_id not in set(existing["H_id"].values):
+                pd.DataFrame([meta]).to_csv(meta_file, mode="a", header=False, index=False)
+        else:
+            pd.DataFrame([meta]).to_csv(meta_file, index=False)

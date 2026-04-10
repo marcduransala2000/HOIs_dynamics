@@ -184,17 +184,13 @@ def generate_network_mixed(N,p1,p2,alpha):
 #To open a network which is already generated
 
 def open_network(alpha):
-    # 1) Lee triángulos
     triangles = [
         tuple(map(int, line.split()))
         for line in open(f"triangles{alpha}_ER.txt")
     ]
-    # 2) Inicia un defaultdict
     neighs = defaultdict(list)
-    # 3) Lee vecinos par a par
     for i, line in enumerate(open(f"pairwise_neighs{alpha}_ER.txt")):
         neighs[i] = list(map(int, line.split()))
-    # 4) Añade HOIs sin preocuparte de claves inexistentes
     for a, b, c in triangles:
         neighs[a].append((b, c))
         neighs[b].append((a, c))
@@ -270,8 +266,8 @@ def simulation_mixed(times, times_eq, k, N, alphas, num_networks, num_runs_per_n
             p2 = (alpha/(1-alpha))*2/(N-2)*p1
             neighs = generate_network_mixed(N,p1,p2,alpha)
             '''
-            # 2. If it is already created the network
             
+            # 2. If it is already created the network        
             neighs = open_network(alpha)
             #print(neighs)
             
@@ -331,7 +327,6 @@ def simulation_mixed(times, times_eq, k, N, alphas, num_networks, num_runs_per_n
     return
 
 #To just generate the network
-
 N = 1000
 k = 10
 alpha = 0.25
@@ -341,20 +336,6 @@ p2 = (alpha/(1-alpha))*2/(N-2)*p1
 neighs = generate_network_mixed(N,p1,p2,alpha) 
 
 #To run the simulation
-'''
-N = 1000
-k = 10
-alphas = [0.25]
-
-times = 100
-times_eq = 0
-
-num_networks = 1
-num_runs_per_network = 1
-
-simulation_mixed(times,times_eq, k, N, alphas, num_networks, num_runs_per_network)
-'''
-'''
 N = 10000
 k = 20
 alphas = [0.05,0.075,0.1,0.15]
@@ -366,4 +347,4 @@ num_networks = 1
 num_runs_per_network = 20
 
 simulation_mixed(times,times_eq, k, N, alphas, num_networks, num_runs_per_network)
-'''
+
