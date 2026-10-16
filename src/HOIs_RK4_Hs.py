@@ -261,12 +261,12 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
         #print(species_data_2)
         #print(species_data_3)
         max_fd = max(species_data_1[2], species_data_2[2], species_data_3[2],species_data_1[3], species_data_2[3], species_data_3[3])
-        F1, D1 = species_data_1[2], species_data_1[3]
-        F2, D2 = species_data_2[2], species_data_2[3]
-        F3, D3 = species_data_3[2], species_data_3[3]
-        f1, d1 = species_data_1[2] / max_fd, species_data_1[3] / max_fd 
-        f2, d2 = species_data_2[2] / max_fd, species_data_2[3] / max_fd
-        f3, d3 = species_data_3[2] / max_fd, species_data_3[3] / max_fd
+        F1, D1 = species_data_1[3], species_data_1[2]
+        F2, D2 = species_data_2[3], species_data_2[2]
+        F3, D3 = species_data_3[3], species_data_3[2]
+        f1, d1 = species_data_1[3] / max_fd, species_data_1[2] / max_fd 
+        f2, d2 = species_data_2[3] / max_fd, species_data_2[2] / max_fd
+        f3, d3 = species_data_3[3] / max_fd, species_data_3[2] / max_fd
         #print(f1, d1, f2, d2, f3, d3)
         
         mean_rate = (f1 + f2 + f3 + d1 + d2 + d3) / 6
