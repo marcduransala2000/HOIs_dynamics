@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import random
 import time
+import ast
+from pathlib import Path
 
 #DOMINANCE MATRIX
 def random_H_grilli(S=3, rng=None):
@@ -261,12 +263,12 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
         #print(species_data_2)
         #print(species_data_3)
         max_fd = max(species_data_1[2], species_data_2[2], species_data_3[2],species_data_1[3], species_data_2[3], species_data_3[3])
-        F1, D1 = species_data_1[3], species_data_1[2]
-        F2, D2 = species_data_2[3], species_data_2[2]
-        F3, D3 = species_data_3[3], species_data_3[2]
-        f1, d1 = species_data_1[3] / max_fd, species_data_1[2] / max_fd 
-        f2, d2 = species_data_2[3] / max_fd, species_data_2[2] / max_fd
-        f3, d3 = species_data_3[3] / max_fd, species_data_3[2] / max_fd
+        F1, D1 = species_data_1.iloc[3], species_data_1.iloc[2]
+        F2, D2 = species_data_2.iloc[3], species_data_2.iloc[2]
+        F3, D3 = species_data_3.iloc[3], species_data_3.iloc[2]
+        f1, d1 = F1 / max_fd, D1 / max_fd
+        f2, d2 = F2 / max_fd, D2 / max_fd
+        f3, d3 = F3 / max_fd, D3 / max_fd
         #print(f1, d1, f2, d2, f3, d3)
         
         mean_rate = (f1 + f2 + f3 + d1 + d2 + d3) / 6
@@ -308,6 +310,7 @@ def run_simulation_with_real_data(plant_data, nsteps, h_int, dt, ALPHAS, num_tri
 # 2- RUN ONLY THE RK4 DYNAMICS for a specific fraction of HOIs (alpha) - DIFFERENT PHYSIOLOGICAL RATES
 # 3- RUN THE MAIN CODE FOR GAUSSIAN DATA
 # 4- RUN THE MAIN CODE FOR REAL DATA
+# 5- SAVE INFORMATION OF SAMPLE DOMINANCE MATRIX H
 
 option = 4
 
